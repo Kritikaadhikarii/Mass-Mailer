@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import nodemailer from "nodemailer";
-import { EmailData } from "@/types";
+import { EmailData, EmailAttachment } from "@/types";
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,6 +30,8 @@ export async function POST(request: NextRequest) {
       userEmail: userEmail,
       recipientCount: recipients.length,
       hasAccessToken: Boolean((session as any).accessToken),
+      hasAttachments: Boolean(emailData.attachments?.length),
+      attachmentCount: emailData.attachments?.length || 0,
     });
 
     // Create transporter with direct pass
@@ -66,6 +68,20 @@ export async function POST(request: NextRequest) {
         try {
           const personalizedContent = content.replace(/\[Name\]/g, recipient.name);
           
+          // Process attachments if any
+          let attachmentsForEmail = undefined;
+          
+          if (emailData.attachments && emailData.attachments.length > 0) {
+            attachmentsForEmail = emailData.attachments.map((attachment: EmailAttachment) => {
+              return {
+                filename: attachment.filename,
+                content: attachment.content,
+                encoding: 'base64',
+                contentType: attachment.contentType
+              };
+            });
+          }
+          
           // Try direct send without verify first
           const result = await new Promise((resolve, reject) => {
             const mailOptions = {
@@ -73,6 +89,7 @@ export async function POST(request: NextRequest) {
               to: recipient.email,
               subject: subject,
               html: personalizedContent,
+              attachments: attachmentsForEmail
             };
             
             transporter.sendMail(mailOptions, (err, info) => {
