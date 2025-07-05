@@ -65,6 +65,10 @@ export default function EmailComposer({
     setRecipients(recipients.filter((_, i) => i !== index));
   };
 
+  const removeAllRecipients = () => {
+    setRecipients([]);
+  };
+
   const handleSend = async () => {
     const content = editor?.getHTML() || '';
 
@@ -356,7 +360,17 @@ export default function EmailComposer({
 
       {/* Recipients Section */}
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Recipients</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-medium text-gray-900">Recipients</h3>
+          {recipients.length > 0 && (
+            <button
+              onClick={removeAllRecipients}
+              className="text-sm px-3 py-1 text-red-600 border border-red-600 rounded-md hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500"
+            >
+              Remove All Recipients
+            </button>
+          )}
+        </div>
 
         {/* Add New Recipient */}
         <div className="flex gap-2 mb-4">
