@@ -1,16 +1,18 @@
 "use client";
-
+import { Analytics } from "@vercel/analytics/next"
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import { Sparkles } from "lucide-react";
 
+
 export default function Home() {
   const { data: session } = useSession();
 
   return (
     <div className="min-h-screen relative overflow-hidden">
+      <Analytics />
       <div className="absolute inset-0 -z-10 h-full w-full bg-white [background:radial-gradient(125%_125%_at_50%_10%,#fff_40%,#8ED0FF_100%)]"></div>
 
       {/* Left side spark */}
